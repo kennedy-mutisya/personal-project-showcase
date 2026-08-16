@@ -5,9 +5,18 @@ function filterProjects(projects, searchTerm) {
     return projects;
   }
 
-  return projects.filter((project) =>
-    `${project.title} ${project.description}`.toLowerCase().includes(search),
-  );
+  return projects.filter((project) => {
+    const searchableContent = [
+      project.title,
+      project.description,
+      project.category,
+      ...project.technologies,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return searchableContent.includes(search);
+  });
 }
 
 export default filterProjects;

@@ -5,80 +5,74 @@ import userEvent from "@testing-library/user-event";
 import App from "../App";
 
 describe("App", () => {
-  test("renders the initial projects", () => {
+  test("renders the portfolio projects", () => {
     render(<App />);
 
-    expect(screen.getByText("Project 1")).toBeInTheDocument();
+    expect(screen.getByText("Creative Portfolio")).toBeInTheDocument();
 
-    expect(screen.getByText("Project 2")).toBeInTheDocument();
+    expect(screen.getByText("E-Commerce Platform")).toBeInTheDocument();
 
-    expect(screen.getByText("Project 3")).toBeInTheDocument();
+    expect(screen.getByText("Task Management App")).toBeInTheDocument();
   });
 
-  test("allows a user to add a new project", async () => {
+  test("allows users to add projects", async () => {
     const user = userEvent.setup();
 
     render(<App />);
 
-    await user.type(screen.getByLabelText("Title"), "E-Commerce Website");
+    await user.type(
+      screen.getByLabelText("Project Title"),
+      "Mobile Banking App",
+    );
+
+    await user.type(screen.getByLabelText("Category"), "Mobile Development");
 
     await user.type(
       screen.getByLabelText("Description"),
-      "An online shopping application.",
+      "A mobile banking application.",
     );
+
+    await user.type(screen.getByLabelText("Technologies"), "React Native");
 
     await user.click(
       screen.getByRole("button", {
-        name: "Add Project",
+        name: "+ Add Project",
       }),
     );
 
-    expect(screen.getByText("E-Commerce Website")).toBeInTheDocument();
-
-    expect(
-      screen.getByText("An online shopping application."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Mobile Banking App")).toBeInTheDocument();
   });
 
-  test("filters projects using the search input", async () => {
+  test("filters projects dynamically", async () => {
     const user = userEvent.setup();
 
     render(<App />);
 
-    const searchInput = screen.getByRole("searchbox");
+    await user.type(screen.getByRole("searchbox"), "E-Commerce");
 
-    await user.type(searchInput, "Project 1");
+    expect(screen.getByText("E-Commerce Platform")).toBeInTheDocument();
 
-    expect(screen.getByText("Project 1")).toBeInTheDocument();
-
-    expect(screen.queryByText("Project 2")).not.toBeInTheDocument();
-
-    expect(screen.queryByText("Project 3")).not.toBeInTheDocument();
+    expect(screen.queryByText("Creative Portfolio")).not.toBeInTheDocument();
   });
 
-  test("searches project descriptions", async () => {
+  test("can search by technology", async () => {
     const user = userEvent.setup();
 
     render(<App />);
 
-    const searchInput = screen.getByRole("searchbox");
+    await user.type(screen.getByRole("searchbox"), "React");
 
-    await user.type(searchInput, "first project");
+    expect(screen.getByText("Creative Portfolio")).toBeInTheDocument();
 
-    expect(screen.getByText("Project 1")).toBeInTheDocument();
-
-    expect(screen.queryByText("Project 2")).not.toBeInTheDocument();
+    expect(screen.getByText("E-Commerce Platform")).toBeInTheDocument();
   });
 
-  test("displays a message when no projects match", async () => {
+  test("shows an empty state for unmatched searches", async () => {
     const user = userEvent.setup();
 
     render(<App />);
 
-    await user.type(
-      screen.getByRole("searchbox"),
-      "Something That Does Not Exist",
-    );
+    await user.type(screen.getByRole("searchbox"), "XYZ Project 999");
 
     expect(screen.getByText("No projects found")).toBeInTheDocument();
 

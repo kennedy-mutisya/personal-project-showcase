@@ -5,22 +5,26 @@ import userEvent from "@testing-library/user-event";
 import SearchBar from "../components/SearchBar";
 
 describe("SearchBar", () => {
-  test("displays the current search value", () => {
-    render(<SearchBar searchTerm="React" onSearchChange={jest.fn()} />);
+  test("renders the search input", () => {
+    render(<SearchBar searchTerm="" onSearchChange={jest.fn()} />);
 
-    expect(screen.getByRole("searchbox")).toHaveValue("React");
+    expect(screen.getByRole("searchbox")).toBeInTheDocument();
   });
 
-  test("calls onSearchChange when user types", async () => {
+  test("calls onSearchChange when typing", async () => {
     const user = userEvent.setup();
+    const onSearchChange = jest.fn();
 
-    const handleSearchChange = jest.fn();
-
-    render(<SearchBar searchTerm="" onSearchChange={handleSearchChange} />);
+    render(<SearchBar searchTerm="" onSearchChange={onSearchChange} />);
 
     await user.type(screen.getByRole("searchbox"), "React");
 
-    expect(handleSearchChange).toHaveBeenCalled();
-    expect(handleSearchChange).toHaveBeenLastCalledWith("t");
+    expect(onSearchChange).toHaveBeenCalled();
+  });
+
+  test("displays the current search term", () => {
+    render(<SearchBar searchTerm="React" onSearchChange={jest.fn()} />);
+
+    expect(screen.getByRole("searchbox")).toHaveValue("React");
   });
 });

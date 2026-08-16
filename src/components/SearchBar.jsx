@@ -1,16 +1,19 @@
 function SearchBar({ searchTerm, onSearchChange }) {
   return (
-    <div className="search-container">
-      <label htmlFor="search" className="sr-only">
-        Search Projects
+    <div className="search-wrapper">
+      <label htmlFor="project-search" className="sr-only">
+        Search projects
       </label>
 
+      <span className="search-icon">🔍</span>
+
       <input
-        id="search"
+        id="project-search"
         type="search"
+        role="searchbox"
         value={searchTerm}
         onChange={(event) => onSearchChange(event.target.value)}
-        placeholder="Search Projects"
+        placeholder="Search projects, technologies, or categories..."
       />
     </div>
   );

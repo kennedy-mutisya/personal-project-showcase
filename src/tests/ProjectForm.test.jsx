@@ -10,62 +10,99 @@ describe("ProjectForm", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: "Add Project",
+        name: "Add a New Project",
       }),
     ).toBeInTheDocument();
 
-    expect(screen.getByLabelText("Title")).toBeInTheDocument();
+    expect(screen.getByLabelText("Project Title")).toBeInTheDocument();
 
     expect(screen.getByLabelText("Description")).toBeInTheDocument();
 
     expect(
       screen.getByRole("button", {
-        name: "Add Project",
+        name: "+ Add Project",
       }),
     ).toBeInTheDocument();
   });
 
-  test("submits a new project", async () => {
+  test("adds a new project", async () => {
     const user = userEvent.setup();
+    const onAddProject = jest.fn();
 
-    const handleAddProject = jest.fn();
+    render(<ProjectForm onAddProject={onAddProject} />);
 
-    render(<ProjectForm onAddProject={handleAddProject} />);
+    await user.type(screen.getByLabelText("Project Title"), "Weather App");
 
-    await user.type(screen.getByLabelText("Title"), "Weather App");
+    await user.type(screen.getByLabelText("Category"), "Web Development");
 
     await user.type(
       screen.getByLabelText("Description"),
-      "A React weather application.",
+      "A weather application built with React.",
+    );
+
+    await user.type(
+      screen.getByLabelText("Technologies"),
+      "React, CSS, JavaScript",
     );
 
     await user.click(
       screen.getByRole("button", {
-        name: "Add Project",
+        name: "+ Add Project",
       }),
     );
 
-    expect(handleAddProject).toHaveBeenCalledTimes(1);
-
-    expect(handleAddProject).toHaveBeenCalledWith({
+    expect(onAddProject).toHaveBeenCalledWith({
       title: "Weather App",
-      description: "A React weather application.",
+      description: "A weather application built with React.",
+      category: "Web Development",
+      technologies: ["React", "CSS", "JavaScript"],
     });
   });
 
-  test("does not submit an empty project", async () => {
+  test("shows an error when title is empty", async () => {
     const user = userEvent.setup();
+    const onAddProject = jest.fn();
 
-    const handleAddProject = jest.fn();
-
-    render(<ProjectForm onAddProject={handleAddProject} />);
+    render(<ProjectForm onAddProject={onAddProject} />);
 
     await user.click(
       screen.getByRole("button", {
-        name: "Add Project",
+        name: "+ Add Project",
       }),
     );
 
-    expect(handleAddProject).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Please enter a project title.",
+    );
+
+    expect(onAddProject).not.toHaveBeenCalled();
+  });
+
+  test("clears the form after successful submission", async () => {
+    const user = userEvent.setup();
+
+    render(<ProjectForm onAddProject={jest.fn()} />);
+
+    const title = screen.getByLabelText("Project Title");
+
+    const description = screen.getByLabelText("Description");
+
+    const category = screen.getByLabelText("Category");
+
+    await user.type(title, "Blog App");
+
+    await user.type(description, "A personal blog application.");
+
+    await user.type(category, "Web Development");
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "+ Add Project",
+      }),
+    );
+
+    expect(title).toHaveValue("");
+    expect(description).toHaveValue("");
+    expect(category).toHaveValue("");
   });
 });

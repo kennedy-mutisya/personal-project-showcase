@@ -4,7 +4,11 @@ function ProjectForm({ onAddProject }) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    category: "",
+    technologies: "",
   });
+
+  const [error, setError] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -13,45 +17,98 @@ function ProjectForm({ onAddProject }) {
       ...previousData,
       [name]: value,
     }));
+
+    // Remove the validation message once the user
+    // starts correcting the form.
+    if (error) {
+      setError("");
+    }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!formData.title.trim() || !formData.description.trim()) {
+    const title = formData.title.trim();
+    const description = formData.description.trim();
+    const category = formData.category.trim();
+
+    if (!title) {
+      setError("Please enter a project title.");
       return;
     }
 
+    if (!description) {
+      setError("Please enter a project description.");
+      return;
+    }
+
+    if (!category) {
+      setError("Please enter a project category.");
+      return;
+    }
+
+    const technologies = formData.technologies
+      .split(",")
+      .map((technology) => technology.trim())
+      .filter(Boolean);
+
     onAddProject({
-      title: formData.title.trim(),
-      description: formData.description.trim(),
+      title,
+      description,
+      category,
+      technologies,
     });
 
     setFormData({
       title: "",
       description: "",
+      category: "",
+      technologies: "",
     });
+
+    setError("");
   };
 
   return (
-    <section className="form-section">
-      <h2>Add Project</h2>
+    <section className="form-card">
+      <div className="section-intro">
+        <span className="section-label">CREATE</span>
+
+        <h2>Add a New Project</h2>
+
+        <p>Add your latest work to the portfolio.</p>
+      </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="title">Title</label>
+        <div className="form-grid">
+          <div className="form-field">
+            <label htmlFor="title">Project Title</label>
 
-          <input
-            id="title"
-            name="title"
-            type="text"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Enter project title"
-          />
+            <input
+              id="title"
+              name="title"
+              type="text"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="e.g. E-Commerce Platform"
+            />
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="category">Category</label>
+
+            <input
+              id="category"
+              name="category"
+              type="text"
+              value={formData.category}
+              onChange={handleChange}
+              placeholder="e.g. Web Development"
+            />
+          </div>
         </div>
 
-        <div className="form-group">
+        <div className="form-field">
           <label htmlFor="description">Description</label>
 
           <textarea
@@ -59,13 +116,34 @@ function ProjectForm({ onAddProject }) {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Enter project description"
+            placeholder="Describe your project..."
             rows="4"
           />
         </div>
 
-        <button type="submit" className="add-button">
-          Add Project
+        <div className="form-field">
+          <label htmlFor="technologies">Technologies</label>
+
+          <input
+            id="technologies"
+            name="technologies"
+            type="text"
+            value={formData.technologies}
+            onChange={handleChange}
+            placeholder="React, CSS, JavaScript"
+          />
+
+          <small>Separate technologies with commas.</small>
+        </div>
+
+        {error && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        <button type="submit" className="primary-button">
+          + Add Project
         </button>
       </form>
     </section>

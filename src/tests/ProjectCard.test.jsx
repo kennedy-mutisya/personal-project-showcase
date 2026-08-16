@@ -1,14 +1,17 @@
 import { render, screen } from "@testing-library/react";
+
 import ProjectCard from "../components/ProjectCard";
 
 describe("ProjectCard", () => {
-  test("renders the project title and description", () => {
-    const project = {
-      id: 1,
-      title: "Portfolio Website",
-      description: "A responsive portfolio website.",
-    };
+  const project = {
+    id: 1,
+    title: "Portfolio Website",
+    description: "A responsive personal portfolio.",
+    category: "Web Design",
+    technologies: ["React", "CSS"],
+  };
 
+  test("renders project information", () => {
     render(<ProjectCard project={project} />);
 
     expect(
@@ -18,7 +21,13 @@ describe("ProjectCard", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("A responsive portfolio website."),
+      screen.getByText("A responsive personal portfolio."),
     ).toBeInTheDocument();
+
+    expect(screen.getByText("Web Design")).toBeInTheDocument();
+
+    expect(screen.getByText("React")).toBeInTheDocument();
+
+    expect(screen.getByText("CSS")).toBeInTheDocument();
   });
 });
